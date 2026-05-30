@@ -1,0 +1,35 @@
+services:
+  app:
+    build: .
+    ports: ["8000:8000"]
+    volumes: [".:/var/www/html"]
+    depends_on:
+      mysql: {condition: service_healthy}
+      redis: {condition: service_started}
+
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: authstarter
+      MYSQL_USER: auth
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: rootsecret
+    ports: ["3306:3306"]
+    volumes: [mysql_data:/var/lib/mysql]
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootsecret"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+
+  queue:
+    build: .
+    command: php artisan queue:work redis --tries=3
+    volumes: [".:/var/www/html"]
+    depends_on: [redis, mysql]
+
+volumes:
+  mysql_data:
