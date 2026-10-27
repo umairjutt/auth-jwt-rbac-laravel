@@ -1,18 +1,22 @@
 # Auth Starter — Laravel 11 + Sanctum + RBAC + 2FA
 
-A production-ready authentication boilerplate for any Laravel API project. Fork it, run `docker compose up`, and start building your business logic on day one.
+[CI results](https://github.com/umairjutt/auth-jwt-rbac-laravel/actions) · [Engineering guide](PORTFOLIO.md)
+
+> **Status:** Authentication development example using Sanctum opaque bearer tokens. Email verification completion, refresh rotation and full recovery/2FA lifecycle hardening remain.
+
+A Laravel authentication development example using Sanctum bearer tokens, Spatie permissions, password reset and TOTP enrollment.
 
 ## What this demonstrates
 
 - **Sanctum** bearer-token API authentication (works for SPAs and mobile)
 - **Spatie roles & permissions** (RBAC) with `admin`, `manager`, `user` defaults
-- **Email verification** via signed URLs
+- **Email verification integration** — registration emits an event; completion endpoints remain
 - **Password reset** flow with token + cool-down
-- **TOTP 2FA** (Google Authenticator compatible) with recovery codes
+- **TOTP enrollment** and recovery-code generation; recovery-code login and sensitive-action verification remain
 - **Login throttling** + per-user device sessions
-- **Refresh tokens** with rotation
+- **Token lifecycle** — token creation and current-token revocation; refresh rotation remains
 - **Tests** with Pest (auth flow + permission policies)
-- **Dockerized** — `docker compose up` and authenticate against `localhost:8000`
+- **Local containers** — follow the complete quick-start sequence below
 
 ## Architecture
 
@@ -58,7 +62,6 @@ Default seeded users:
 | POST   | `/api/auth/login`             | Login (returns Sanctum token)          |
 | POST   | `/api/auth/logout`            | Revoke current token                   |
 | GET    | `/api/auth/me`                | Current user + roles                   |
-| POST   | `/api/auth/email/verify/{id}` | Verify email via signed URL            |
 | POST   | `/api/auth/password/forgot`   | Send reset link                        |
 | POST   | `/api/auth/password/reset`    | Reset with token                       |
 | POST   | `/api/auth/2fa/enable`        | Generate QR + secret                   |
@@ -84,11 +87,11 @@ docker compose exec app ./vendor/bin/pest
 
 - Mailer is `log` driver in dev — wire up Mailgun/Resend in production
 - No social login yet (Google/GitHub coming via Socialite)
-- Refresh-token rotation requires explicit `/refresh` call; consider sliding expiration
+- Refresh rotation and complete email-verification routes are not implemented
 
 ## Deploy
 
-See [DEPLOY.md](DEPLOY.md).
+The Compose configuration is for local development; production deployment documentation remains to be completed.
 
 <!-- ownership:author -->
 ---
@@ -97,4 +100,4 @@ See [DEPLOY.md](DEPLOY.md).
 
 **Umair** &mdash; [@umairjutt](https://github.com/umairjutt)
 
-Designed, built and maintained by me. Licensed under the [MIT License](LICENSE).
+Maintained by [Umair Jutt](https://github.com/umairjutt). See [LICENSE](LICENSE) for repository licensing.
